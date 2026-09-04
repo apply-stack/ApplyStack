@@ -1,0 +1,12 @@
+[project]
+name = "applystack"
+version = "0.1.0"
+description = "Job / Internship Finder API"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]",
+    "pydantic-settings",
+]
+
+[tool.fastapi]
+entrypoint = "app.main:app"
