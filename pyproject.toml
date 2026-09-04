@@ -8,5 +8,30 @@ dependencies = [
     "pydantic-settings",
 ]
 
+[dependency-groups]
+dev = [
+    "pre-commit",
+    "ruff",
+]
+
 [tool.fastapi]
 entrypoint = "app.main:app"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes: undefined names, unused imports/variables
+    "I",    # isort: import ordering
+    "B",    # flake8-bugbear: likely bugs (mutable defaults, etc.)
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade: modernize syntax for the target version
+    "SIM",  # flake8-simplify
+]
+ignore = [
+    "E501",  # line length is owned by the formatter, not the linter
+]

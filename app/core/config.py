@@ -19,7 +19,9 @@ class Settings(BaseSettings):
 
     api_v1_prefix: str = "/api/v1"
 
-    database_url: str = "postgresql+asyncpg://applystack:applystack@localhost:5432/applystack"
+    database_url: str = (
+        "postgresql+asyncpg://applystack:applystack@localhost:5432/applystack"
+    )
 
 
 @lru_cache
