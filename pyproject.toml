@@ -16,6 +16,7 @@ dev = [
     "mypy",
     "pre-commit",
     "pytest",
+    "pytest-cov",
     "ruff",
 ]
 
@@ -57,3 +58,15 @@ warn_unused_ignores = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["app"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
