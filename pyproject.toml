@@ -10,9 +10,18 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "mypy",
     "pre-commit",
+    "pytest",
     "ruff",
 ]
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
 
 [tool.fastapi]
 entrypoint = "app.main:app"
@@ -35,3 +44,13 @@ select = [
 ignore = [
     "E501",  # line length is owned by the formatter, not the linter
 ]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,63 @@
+name: applystack
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    container_name: applystack-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-applystack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-applystack}
+      POSTGRES_DB: ${POSTGRES_DB:-applystack}
+    ports:
+      - "${POSTGRES_HOST_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-applystack} -d ${POSTGRES_DB:-applystack}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: applystack-api
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    env_file:
+      - .env
+    environment:
+      # Overrides whatever .env says. Inside this network the database host is
+      # the service name "db" on its internal port 5432 - never localhost:5433.
+      DATABASE_URL: >-
+        postgresql+asyncpg://${POSTGRES_USER:-applystack}:${POSTGRES_PASSWORD:-applystack}@db:5432/${POSTGRES_DB:-applystack}
+      # Filesystem events do not cross the Windows/macOS to Linux VM boundary
+      # reliably. Without this, --reload silently stops noticing your edits.
+      WATCHFILES_FORCE_POLLING: "true"
+    ports:
+      - "${API_HOST_PORT:-8000}:8000"
+    volumes:
+      # Mount source directories individually rather than the whole repo, so a
+      # host .venv (Windows binaries) never shadows the container's packages.
+      - ./app:/app/app
+      - ./tests:/app/tests
+      - ./scripts:/app/scripts
+      - ./alembic:/app/alembic
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        ["CMD", "python", "-c",
+         "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  pgdata:

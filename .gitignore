@@ -221,3 +221,6 @@ __marimo__/
 CLAUDE.local.md
 .agents/
 skills-lock.json
+
+# Frontend
+node_modules/
