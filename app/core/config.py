@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     database_url: str = (
         "postgresql+asyncpg://applystack:applystack@localhost:5432/applystack"
     )
+    # Log every SQL statement or not. Separate from DEBUG on purpose.
+    # Takes the value from the .env file, but defaults to False if not present.
+    sql_echo: bool = False
 
 
 @lru_cache
