@@ -1,0 +1,93 @@
+"""
+Create educations.
+
+Revision ID: f25afffa4306
+Revises: ab88a16395f9
+"""
+
+from collections.abc import Sequence
+
+import sqlalchemy as sa
+
+from alembic import op
+
+revision: str = "f25afffa4306"
+down_revision: str | Sequence[str] | None = "ab88a16395f9"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
+
+
+def upgrade() -> None:
+    op.create_table(
+        "educations",
+        sa.Column("user_id", sa.BigInteger(), nullable=False),
+        sa.Column("institution_name", sa.Text(), nullable=False),
+        sa.Column("degree", sa.Text(), nullable=False),
+        sa.Column("field_of_study", sa.Text(), nullable=False),
+        sa.Column("location", sa.Text(), nullable=True),
+        sa.Column("id", sa.BigInteger(), sa.Identity(always=False), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column("start_year", sa.Integer(), nullable=True),
+        sa.Column("start_month", sa.Integer(), nullable=True),
+        sa.Column("end_year", sa.Integer(), nullable=True),
+        sa.Column("end_month", sa.Integer(), nullable=True),
+        sa.Column(
+            "is_current", sa.Boolean(), server_default=sa.text("false"), nullable=False
+        ),
+        sa.CheckConstraint(
+            "(end_year, end_month) >= (start_year, start_month)",
+            name=op.f("ck_educations_date_order"),
+        ),
+        sa.CheckConstraint(
+            "(start_year IS NULL) = (start_month IS NULL) AND (end_year IS NULL) = (end_month IS NULL)",
+            name=op.f("ck_educations_date_pairs"),
+        ),
+        sa.CheckConstraint(
+            "NOT is_current OR end_year IS NULL",
+            name=op.f("ck_educations_current_without_end"),
+        ),
+        sa.CheckConstraint(
+            "length(trim(degree)) > 0", name=op.f("ck_educations_degree_not_blank")
+        ),
+        sa.CheckConstraint(
+            "length(trim(field_of_study)) > 0",
+            name=op.f("ck_educations_field_of_study_not_blank"),
+        ),
+        sa.CheckConstraint(
+            "length(trim(institution_name)) > 0",
+            name=op.f("ck_educations_institution_name_not_blank"),
+        ),
+        sa.CheckConstraint(
+            "start_month BETWEEN 1 AND 12 AND end_month BETWEEN 1 AND 12 AND start_year BETWEEN 1 AND 9999 AND end_year BETWEEN 1 AND 9999",
+            name=op.f("ck_educations_date_ranges"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["user_id"],
+            ["users.id"],
+            name=op.f("fk_educations_user_id_users"),
+            ondelete="RESTRICT",
+        ),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_educations")),
+        sa.UniqueConstraint("id", "user_id", name=op.f("uq_educations_id_user_id")),
+    )
+    op.create_index("ix_educations_user_id", "educations", ["user_id"], unique=False)
+    op.execute(
+        "CREATE TRIGGER touch_timestamps BEFORE UPDATE ON educations FOR EACH ROW EXECUTE FUNCTION touch_record_timestamps()"
+    )
+
+
+def downgrade() -> None:
+    op.execute("DROP TRIGGER touch_timestamps ON educations")
+    op.drop_index("ix_educations_user_id", table_name="educations")
+    op.drop_table("educations")
