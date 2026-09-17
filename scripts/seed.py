@@ -52,9 +52,7 @@ TODAY = date(2026, 9, 6)
 
 
 # --------------------------------------------------------------------------
-# Companies. `boilerplate` is deliberately repeated across every posting the
-# company publishes - that shared text is what the dedup work has to strip
-# before comparing two descriptions.
+# Companies.
 # --------------------------------------------------------------------------
 @dataclass(frozen=True)
 class Company:
