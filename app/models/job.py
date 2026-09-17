@@ -27,6 +27,9 @@ class Job(RecordMixin, TimestampMixin, Base):
             name="required_text",
         ),
         CheckConstraint(
+            "length(trim(source_job_id)) > 0", name="source_job_id_not_blank"
+        ),
+        CheckConstraint(
             "application_end_date >= application_start_date", name="date_order"
         ),
         CheckConstraint(
@@ -57,7 +60,7 @@ class Job(RecordMixin, TimestampMixin, Base):
     work_mode: Mapped[str | None] = mapped_column(Text)
     employment_type: Mapped[str | None] = mapped_column(Text)
     source: Mapped[str] = mapped_column(Text)
-    source_job_id: Mapped[str | None] = mapped_column(Text)
+    source_job_id: Mapped[str] = mapped_column(Text)
     status: Mapped[str] = mapped_column(Text, server_default=text("'unknown'"))
     last_seen_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
