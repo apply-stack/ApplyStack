@@ -71,3 +71,6 @@ exclude_also = [
     "if TYPE_CHECKING:",
     "raise NotImplementedError",
 ]
+
+[tool.setuptools.package-data]
+"app.services.cv" = ["templates/*.tex", "templates/LICENSE"]

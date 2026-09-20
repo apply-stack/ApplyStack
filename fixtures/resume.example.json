@@ -1,0 +1,60 @@
+{
+  "basics": {
+    "name": "Deniz Yilmaz",
+    "email": "deniz@example.com",
+    "city": "Istanbul",
+    "country_code": "TR",
+    "links": {
+      "github": "https://github.com/example",
+      "website": "https://example.com"
+    },
+    "location": {
+      "city": "Istanbul",
+      "countryCode": "TR"
+    },
+    "url": "https://example.com",
+    "profiles": [
+      {
+        "network": "GitHub",
+        "url": "https://github.com/example"
+      }
+    ]
+  },
+  "education": [
+    {
+      "institution": "Example University",
+      "area": "Computer Science",
+      "studyType": "BSc",
+      "is_current": true,
+      "startDate": "2023-09"
+    }
+  ],
+  "work": [
+    {
+      "name": "Example Company",
+      "position": "Intern",
+      "is_current": false,
+      "startDate": "2025-06",
+      "endDate": "2025-09",
+      "highlights": [
+        "Built an API"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Example project",
+      "repositoryUrl": "https://github.com/example/project",
+      "is_current": false,
+      "highlights": []
+    }
+  ],
+  "skills": [
+    {
+      "name": "Programming Languages",
+      "keywords": [
+        "Python"
+      ]
+    }
+  ]
+}
